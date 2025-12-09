@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tim Dating Life Exchange</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-green-500: rgba(34, 197, 94, 1);
+            --color-orange-500: rgba(168, 75, 47, 1);
+
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-border: rgba(94, 82, 64, 0.2);
+            --color-btn-primary-text: var(--color-cream-50);
+
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+
+            --radius-base: 8px;
+            --radius-md: 10px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --space-32: 32px;
+
+            --duration-normal: 250ms;
+            --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-16);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-teal-500) 0%, var(--color-teal-600) 100%);
+            color: var(--color-white);
+            padding: var(--space-24);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-24);
+            box-shadow: var(--shadow-md);
+        }
+
+        header h1 {
+            margin: 0 0 var(--space-8) 0;
+            font-size: 32px;
+        }
+
+        header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            gap: var(--space-8);
+            margin-bottom: var(--space-24);
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: var(--space-12) var(--space-16);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            border-bottom: 3px solid transparent;
+            transition: all var(--duration-normal) var(--ease-standard);
+            margin-bottom: -2px;
+        }
+
+        .tab-btn.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--space-20);
+            margin-bottom: var(--space-24);
+        }
+
+        .stock-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-16);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--duration-normal) var(--ease-standard);
+        }
+
+        .stock-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .stock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--space-12);
+        }
+
+        .stock-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .stock-info {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin: 0;
+        }
+
+        .price-display {
+            font-size: 24px;
+            font-weight: 700;
+            margin: var(--space-12) 0;
+        }
+
+        .price-change {
+            font-size: 14px;
+            margin-bottom: var(--space-12);
+        }
+
+        .price-change.positive {
+            color: var(--color-green-500);
+        }
+
+        .price-change.negative {
+            color: var(--color-red-500);
+        }
+
+        .chart-container {
+            margin: var(--space-16) 0;
+            max-height: 200px;
+        }
+
+        .chart-toggle {
+            background: var(--color-gray-200);
+            border: none;
+            padding: var(--space-8) var(--space-12);
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            font-size: 12px;
+            margin-bottom: var(--space-12);
+            transition: all var(--duration-normal);
+        }
+
+        .chart-toggle.hidden {
+            background: var(--color-primary);
+            color: var(--color-btn-primary-text);
+        }
+
+        .trading-controls {
+            display: flex;
+            gap: var(--space-8);
+            margin-top: var(--space-12);
+        }
+
+        .trade-input {
+            flex: 1;
+            padding: var(--space-8) var(--space-12);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: var(--space-8) var(--space-16);
+            border: none;
+            border-radius: var(--radius-base);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--duration-normal);
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: var(--color-btn-primary-text);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--color-red-500);
+            color: var(--color-white);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-red-400);
+        }
+
+        .btn-small {
+            padding: var(--space-6) var(--space-12);
+            font-size: 12px;
+        }
+
+        .portfolio-section {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-20);
+            margin-bottom: var(--space-24);
+        }
+
+        .portfolio-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-16);
+        }
+
+        .portfolio-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .balance {
+            text-align: right;
+        }
+
+        .balance-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .balance-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .holdings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: var(--space-16);
+        }
+
+        .holdings-table th {
+            background: var(--color-gray-200);
+            padding: var(--space-12);
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            border: 1px solid var(--color-border);
+        }
+
+        .holdings-table td {
+            padding: var(--space-12);
+            border: 1px solid var(--color-border);
+            font-size: 14px;
+        }
+
+        .holdings-table tr:hover {
+            background: var(--color-gray-200);
+        }
+
+        .news-section {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-20);
+        }
+
+        .news-form {
+            background: var(--color-gray-200);
+            padding: var(--space-16);
+            border-radius: var(--radius-base);
+            margin-bottom: var(--space-20);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-16);
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: var(--space-8);
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: var(--space-8) var(--space-12);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .sentiment-slider {
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+        }
+
+        .sentiment-slider input {
+            flex: 1;
+        }
+
+        .sentiment-value {
+            font-weight: 700;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .sentiment-value.positive {
+            color: var(--color-green-500);
+        }
+
+        .sentiment-value.negative {
+            color: var(--color-red-500);
+        }
+
+        .news-feed {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .news-item {
+            background: var(--color-cream-50);
+            border-left: 4px solid var(--color-teal-500);
+            padding: var(--space-16);
+            margin-bottom: var(--space-12);
+            border-radius: var(--radius-base);
+        }
+
+        .news-item.negative {
+            border-left-color: var(--color-red-500);
+        }
+
+        .news-item.positive {
+            border-left-color: var(--color-green-500);
+        }
+
+        .news-meta {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-8);
+        }
+
+        .news-body {
+            margin: 0 0 var(--space-8) 0;
+            line-height: 1.5;
+        }
+
+        .sentiment-badge {
+            display: inline-block;
+            padding: var(--space-4) var(--space-8);
+            border-radius: var(--radius-base);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .sentiment-badge.positive {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--color-green-500);
+        }
+
+        .sentiment-badge.negative {
+            background: rgba(192, 21, 47, 0.1);
+            color: var(--color-red-500);
+        }
+
+        .sentiment-badge.neutral {
+            background: rgba(98, 108, 113, 0.1);
+            color: var(--color-slate-500);
+        }
+
+        .leaderboard {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-20);
+            margin-bottom: var(--space-24);
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table th {
+            background: var(--color-gray-200);
+            padding: var(--space-12);
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid var(--color-border);
+        }
+
+        .leaderboard-table td {
+            padding: var(--space-12);
+            border: 1px solid var(--color-border);
+        }
+
+        .leaderboard-table tr:hover {
+            background: var(--color-gray-200);
+        }
+
+        .rank {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--color-primary);
+        }
+
+        @media (max-width: 768px) {
+            .stock-grid {
+                grid-template-columns: 1fr;
+            }
+            header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💹 Tim Dating Life Exchange</h1>
+            <p>Trade on Tim's romantic endeavors. All transactions in TLT (Tim Love Token).</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(event, 'market')">📈 Market</button>
+            <button class="tab-btn" onclick="switchTab(event, 'portfolio')">💼 My Portfolio</button>
+            <button class="tab-btn" onclick="switchTab(event, 'leaderboard')">🏆 Leaderboard</button>
+            <button class="tab-btn" onclick="switchTab(event, 'news')">📰 News Feed</button>
+        </div>
+
+        <!-- MARKET TAB -->
+        <div id="market" class="tab-content active">
+            <div class="stock-grid" id="stockGrid"></div>
+        </div>
+
+        <!-- PORTFOLIO TAB -->
+        <div id="portfolio" class="tab-content">
+            <div class="portfolio-section">
+                <div class="portfolio-header">
+                    <h2>Your Portfolio</h2>
+                    <div class="balance">
+                        <div class="balance-label">Total Balance</div>
+                        <div class="balance-value" id="totalBalance">100 TLT</div>
+                    </div>
+                </div>
+                <table class="holdings-table">
+                    <thead>
+                        <tr>
+                            <th>Stock</th>
+                            <th>Quantity</th>
+                            <th>Current Price</th>
+                            <th>Total Value</th>
+                            <th>Gain/Loss</th>
+                        </tr>
+                    </thead>
+                    <tbody id="holdingsTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- LEADERBOARD TAB -->
+        <div id="leaderboard" class="tab-content">
+            <div class="leaderboard">
+                <h2>Trader Rankings</h2>
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Trader</th>
+                            <th>Portfolio Value</th>
+                            <th>Gain/Loss</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- NEWS TAB -->
+        <div id="news" class="tab-content">
+            <div class="news-section">
+                <h2>Market News & Updates</h2>
+                <div class="news-form">
+                    <h3>Post an Update</h3>
+                    <div class="form-group">
+                        <label class="form-label">About which girl?</label>
+                        <select class="form-input" id="newsStockSelect">
+                            <option value="">Select a stock...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">News Content</label>
+                        <textarea class="form-input" id="newsContent" placeholder="What's the news about this stock?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sentiment (-10 = Bad, 10 = Great)</label>
+                        <div class="sentiment-slider">
+                            <input type="range" id="sentimentSlider" min="-10" max="10" value="0">
+                            <span class="sentiment-value" id="sentimentValue">0</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="postNews()">Post Update</button>
+                </div>
+                <div class="news-feed" id="newsFeed"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        const girls = [
+            {
+                id: 'A',
+                name: 'A (Beijing)',
+                background: 'Columbia Masters candidate, considering PhD',
+                currentPrice: 10,
+                priceHistory: [10, 10.2, 9.8, 10.5, 10.1, 10.8, 10.3],
+                volume: [5, 8, 3, 12, 7, 15, 6],
+                sentiment: 0,
+                color: '#E94B3C'
+            },
+            {
+                id: 'B',
+                name: 'B (Qingdao)',
+                background: 'LLM Research, Part-time Masters',
+                currentPrice: 10,
+                priceHistory: [10, 10.1, 10.4, 10.2, 10.6, 10.9, 10.5],
+                volume: [4, 6, 9, 5, 11, 8, 10],
+                sentiment: 0,
+                color: '#4A90E2'
+            },
+            {
+                id: 'C',
+                name: 'C (CXG\'s Friend)',
+                background: 'Casual vibes, spontaneous hangouts',
+                currentPrice: 10,
+                priceHistory: [10, 9.9, 10.3, 10.1, 9.7, 10.2, 9.9],
+                volume: [3, 7, 4, 8, 6, 5, 9],
+                sentiment: 0,
+                color: '#F5A623'
+            },
+            {
+                id: 'D',
+                name: 'D (Shanghai)',
+                background: 'Finance professional, boarding school background',
+                currentPrice: 10,
+                priceHistory: [10, 10.2, 10.1, 9.9, 10.4, 10.3, 10.2],
+                volume: [6, 5, 7, 4, 10, 6, 8],
+                sentiment: 0,
+                color: '#7ED321'
+            }
+        ];
+
+        let traders = {
+            'You': { balance: 100, holdings: {}, initialBalance: 100 },
+            'Tim': { balance: 100, holdings: {}, initialBalance: 100 },
+            'Friend 1': { balance: 100, holdings: {}, initialBalance: 100 },
+            'Friend 2': { balance: 100, holdings: {}, initialBalance: 100 }
+        };
+
+        let news = [];
+        let charts = {};
+
+        function switchTab(event, tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function initializeMarket() {
+            const stockGrid = document.getElementById('stockGrid');
+            stockGrid.innerHTML = '';
+
+            girls.forEach(girl => {
+                const card = document.createElement('div');
+                card.className = 'stock-card';
+                const priceChange = girl.currentPrice - girl.priceHistory[0];
+                const percentChange = ((priceChange / girl.priceHistory[0]) * 100).toFixed(2);
+
+                card.innerHTML = `
+                    <div class="stock-header">
+                        <div>
+                            <h3 class="stock-title">${girl.name}</h3>
+                            <p class="stock-info">${girl.background}</p>
+                        </div>
+                    </div>
+                    <div class="price-display">${girl.currentPrice.toFixed(2)} TLT</div>
+                    <div class="price-change ${priceChange >= 0 ? 'positive' : 'negative'}">
+                        ${priceChange >= 0 ? '📈' : '📉'} ${Math.abs(percentChange)}% 
+                        (${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)} TLT)
+                    </div>
+                    <div class="chart-container" id="chart-${girl.id}" style="display: none;"></div>
+                    <button class="chart-toggle" onclick="toggleChart('${girl.id}')">Show Chart</button>
+                    <div class="trading-controls">
+                        <input type="number" class="trade-input" id="qty-${girl.id}" placeholder="Quantity" min="1">
+                        <button class="btn btn-primary btn-small" onclick="buyStock('${girl.id}')">Buy</button>
+                        <button class="btn btn-secondary btn-small" onclick="sellStock('${girl.id}')">Sell</button>
+                    </div>
+                `;
+
+                stockGrid.appendChild(card);
+            });
+
+            populateNewsSelect();
+            updatePortfolioTab();
+            updateLeaderboard();
+        }
+
+        function toggleChart(girlId) {
+            const girl = girls.find(g => g.id === girlId);
+            const chartContainer = document.getElementById(`chart-${girlId}`);
+            const button = event.target;
+
+            if (chartContainer.style.display === 'none') {
+                chartContainer.style.display = 'block';
+                button.classList.add('hidden');
+                button.textContent = 'Hide Chart';
+                createChart(girl);
+            } else {
+                chartContainer.style.display = 'none';
+                button.classList.remove('hidden');
+                button.textContent = 'Show Chart';
+            }
+        }
+
+        function createChart(girl) {
+            const canvasId = `chart-${girl.id}`;
+            if (charts[canvasId]) return;
+
+            const container = document.getElementById(canvasId);
+            const canvas = document.createElement('canvas');
+            canvas.id = `canvas-${girl.id}`;
+            container.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            charts[canvasId] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['T-6', 'T-5', 'T-4', 'T-3', 'T-2', 'T-1', 'Now'],
+                    datasets: [
+                        {
+                            label: 'Price (TLT)',
+                            data: girl.priceHistory,
+                            borderColor: girl.color,
+                            backgroundColor: girl.color + '20',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Volume',
+                            data: girl.volume,
+                            type: 'bar',
+                            backgroundColor: girl.color + '40',
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true }
+                    },
+                    scales: {
+                        y: {
+                            title: { display: true, text: 'Price' },
+                            position: 'left'
+                        },
+                        y1: {
+                            title: { display: true, text: 'Volume' },
+                            position: 'right',
+                            max: 20
+                        }
+                    }
+                }
+            });
+        }
+
+        function buyStock(girlId) {
+            const girl = girls.find(g => g.id === girlId);
+            const qty = parseInt(document.getElementById(`qty-${girlId}`).value);
+            if (!qty || qty <= 0) return alert('Invalid quantity');
+
+            const cost = qty * girl.currentPrice;
+            const yourBalance = traders['You'].balance;
+            if (cost > yourBalance) return alert('Insufficient balance!');
+
+            traders['You'].balance -= cost;
+            traders['You'].holdings[girlId] = (traders['You'].holdings[girlId] || 0) + qty;
+
+            // Price impact: buying increases price slightly
+            girl.currentPrice += 0.05 * qty;
+            girl.priceHistory.push(girl.currentPrice);
+            if (girl.priceHistory.length > 7) girl.priceHistory.shift();
+            girl.volume.push(qty);
+            if (girl.volume.length > 7) girl.volume.shift();
+
+            document.getElementById(`qty-${girlId}`).value = '';
+            initializeMarket();
+        }
+
+        function sellStock(girlId) {
+            const girl = girls.find(g => g.id === girlId);
+            const qty = parseInt(document.getElementById(`qty-${girlId}`).value);
+            const yourHoldings = traders['You'].holdings[girlId] || 0;
+            if (!qty || qty <= 0 || qty > yourHoldings) return alert('Invalid or insufficient holdings!');
+
+            const proceeds = qty * girl.currentPrice;
+            traders['You'].balance += proceeds;
+            traders['You'].holdings[girlId] -= qty;
+
+            // Price impact: selling decreases price slightly
+            girl.currentPrice -= 0.05 * qty;
+            girl.priceHistory.push(girl.currentPrice);
+            if (girl.priceHistory.length > 7) girl.priceHistory.shift();
+            girl.volume.push(qty);
+            if (girl.volume.length > 7) girl.volume.shift();
+
+            document.getElementById(`qty-${girlId}`).value = '';
+            initializeMarket();
+        }
+
+        function populateNewsSelect() {
+            const select = document.getElementById('newsStockSelect');
+            select.innerHTML = '<option value="">Select a stock...</option>';
+            girls.forEach(girl => {
+                const option = document.createElement('option');
+                option.value = girl.id;
+                option.textContent = girl.name;
+                select.appendChild(option);
+            });
+        }
+
+        document.getElementById('sentimentSlider').addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            const display = document.getElementById('sentimentValue');
+            display.textContent = value;
+            display.className = 'sentiment-value ' + (value > 0 ? 'positive' : value < 0 ? 'negative' : '');
+        });
+
+        function postNews() {
+            const girlId = document.getElementById('newsStockSelect').value;
+            const content = document.getElementById('newsContent').value;
+            const sentiment = parseInt(document.getElementById('sentimentSlider').value);
+
+            if (!girlId || !content) return alert('Please fill in all fields');
+
+            const girl = girls.find(g => g.id === girlId);
+            
+            // Price impact based on sentiment
+            const priceImpact = (sentiment / 10) * 0.5;
+            girl.currentPrice = Math.max(1, girl.currentPrice + priceImpact);
+            girl.sentiment = sentiment;
+            girl.priceHistory.push(girl.currentPrice);
+            if (girl.priceHistory.length > 7) girl.priceHistory.shift();
+
+            news.unshift({
+                id: Date.now(),
+                girlId,
+                girlName: girl.name,
+                content,
+                sentiment,
+                timestamp: new Date().toLocaleString()
+            });
+
+            // Random trader reactions
+            const traderNames = Object.keys(traders).filter(t => t !== 'You');
+            traderNames.forEach(traderName => {
+                if (Math.random() > 0.5) {
+                    const qty = Math.floor(Math.random() * 3) + 1;
+                    if (sentiment > 0 && traders[traderName].balance >= qty * girl.currentPrice) {
+                        traders[traderName].balance -= qty * girl.currentPrice;
+                        traders[traderName].holdings[girlId] = (traders[traderName].holdings[girlId] || 0) + qty;
+                    } else if (sentiment < 0 && (traders[traderName].holdings[girlId] || 0) >= qty) {
+                        traders[traderName].balance += qty * girl.currentPrice;
+                        traders[traderName].holdings[girlId] -= qty;
+                    }
+                }
+            });
+
+            document.getElementById('newsStockSelect').value = '';
+            document.getElementById('newsContent').value = '';
+            document.getElementById('sentimentSlider').value = 0;
+            document.getElementById('sentimentValue').textContent = '0';
+
+            updateNewsFeed();
+            initializeMarket();
+        }
+
+        function updateNewsFeed() {
+            const feed = document.getElementById('newsFeed');
+            feed.innerHTML = '';
+
+            news.forEach(item => {
+                const div = document.createElement('div');
+                const sentimentClass = item.sentiment > 0 ? 'positive' : item.sentiment < 0 ? 'negative' : 'neutral';
+                div.className = `news-item ${sentimentClass}`;
+
+                div.innerHTML = `
+                    <div class="news-meta">${item.girlName} • ${item.timestamp}</div>
+                    <p class="news-body">${item.content}</p>
+                    <span class="sentiment-badge ${sentimentClass}">
+                        Sentiment: ${item.sentiment > 0 ? '+' : ''}${item.sentiment}
+                    </span>
+                `;
+
+                feed.appendChild(div);
+            });
+        }
+
+        function updatePortfolioTab() {
+            const tbody = document.getElementById('holdingsTableBody');
+            tbody.innerHTML = '';
+
+            let totalValue = traders['You'].balance;
+
+            girls.forEach(girl => {
+                const qty = traders['You'].holdings[girl.id] || 0;
+                if (qty > 0) {
+                    const value = qty * girl.currentPrice;
+                    totalValue += value;
+                    const gain = value - (qty * 10); // Assuming bought at 10
+                    const gainPercent = ((gain / (qty * 10)) * 100).toFixed(2);
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${girl.name}</td>
+                        <td>${qty}</td>
+                        <td>${girl.currentPrice.toFixed(2)}</td>
+                        <td>${value.toFixed(2)} TLT</td>
+                        <td class="${gain >= 0 ? 'positive' : 'negative'}" style="color: ${gain >= 0 ? '#22C55E' : '#C01547'}">
+                            ${gain >= 0 ? '+' : ''}${gain.toFixed(2)} (${gainPercent}%)
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                }
+            });
+
+            document.getElementById('totalBalance').textContent = totalValue.toFixed(2) + ' TLT';
+        }
+
+        function updateLeaderboard() {
+            const tbody = document.getElementById('leaderboardTableBody');
+            tbody.innerHTML = '';
+
+            const rankings = Object.entries(traders).map(([name, data]) => {
+                let portfolioValue = data.balance;
+                girls.forEach(girl => {
+                    const qty = data.holdings[girl.id] || 0;
+                    portfolioValue += qty * girl.currentPrice;
+                });
+                return { name, portfolioValue, gain: portfolioValue - 100 };
+            }).sort((a, b) => b.portfolioValue - a.portfolioValue);
+
+            rankings.forEach((trader, index) => {
+                const row = document.createElement('tr');
+                const gainClass = trader.gain >= 0 ? 'positive' : 'negative';
+                row.innerHTML = `
+                    <td><span class="rank">#${index + 1}</span></td>
+                    <td>${trader.name}</td>
+                    <td>${trader.portfolioValue.toFixed(2)} TLT</td>
+                    <td style="color: ${trader.gain >= 0 ? '#22C55E' : '#C01547'}">
+                        ${trader.gain >= 0 ? '+' : ''}${trader.gain.toFixed(2)} TLT
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Initialize
+        initializeMarket();
+    </script>
+</body>
+</html>
